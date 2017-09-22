@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="layui-col-md6">
+<fieldset class="layui-elem-field">
+    <legend>字段集区块 - 默认风格</legend>
+    <div class="layui-field-box">
+        <div id="BBhistory" style="height:400px;"></div>
+    </div>
+</fieldset>
+</div>
+<script src="/static/echarts-2.2.7/build/dist/echarts.js"></script>
+<!--<script src="/static/echarts-2.2.7/src/echarts.js"></script>-->
+    <script>
+        // configure for module loader
+        require.config({
+            paths: {
+                echarts: '/static/echarts-2.2.7/build/dist'
+            }
+        });
+        // use
+        require(
+            [
+                'echarts',
+                'echarts/chart/bar' // require the specific chart type
+            ],
+            function (ec) {
+                // Initialize after dom ready
+                var myChart = ec.init(document.getElementById('BBhistory'));
+                option = {
+                    title : {
+                        text: '五日大单{{code}}>{{vol}}',
+                        subtext: ''
+                    },
+                    tooltip : {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data:['买入','卖出']
+                    },
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            magicType : {show: true, type: ['line', 'bar']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    calculable : true,
+                    xAxis : [
+                        {
+                            type : 'category',
+                            data : {{ date_list|safe }},
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    series : [
+                        {
+                            name:'卖出',
+                            type:'bar',
+                            data:{{sell_list|safe}},
+                        },
+                        {
+                            name:'买入',
+                            type:'bar',
+                            data:{{buy_list|safe}},
+                        }
+                    ]
+                    };
+                myChart.setOption(option);
+            }
+        );
+
+    </script>
+{% endblock %}

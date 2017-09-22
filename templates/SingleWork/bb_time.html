@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block content %}
+<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+var socket1;
+var firstconnect1 = true;
+function connect1() {
+    socket1 = io.connect('/test');
+    socket1.on('connect', function(){
+        socket1.emit('my event',{data:'I\'m connected!'});
+    });
+    socket1.on('my response', function(data){
+        console.log('message=====',data);
+    });
+}
+function send1() {
+    socket1.emit('my event',{data:'another send '});
+};
+</script>
+
+<div class="layui-col-md12">
+    <h1>Socket.io Test1</h1>
+<button id="connect1" onClick='connect1()'/>Connect</button>
+<button id="send1" onClick='send1()'/>Send Message</button>
+
+</div>
+<div class="layui-col-md12">
+<fieldset class="layui-elem-field">
+    <legend>字段集区块 - 默认风格</legend>
+    <div class="layui-field-box">
+        <div id="BBhistory" style="height:400px;"></div>
+    </div>
+</fieldset>
+</div>
+<script src="/static/echarts-2.2.7/build/dist/echarts.js"></script>
+<!--<script src="/static/echarts-2.2.7/src/echarts.js"></script>-->
+    <script>
+        // configure for module loader
+        require.config({
+            paths: {
+                echarts: '/static/echarts-2.2.7/build/dist'
+            }
+        });
+        // use
+        require(
+            [
+                'echarts',
+                'echarts/chart/bar' // require the specific chart type
+            ],
+            function (ec) {
+                // Initialize after dom ready
+                var myChart = ec.init(document.getElementById('BBhistory'));
+                option = {
+                    tooltip : {
+                        trigger: 'axis',
+                        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+                            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+                        }
+                    },
+                    legend: {
+                        data:[ '支出', '收入']
+                    },
+                    toolbox: {
+                        show : true,
+                        feature : {
+                            mark : {show: true},
+                            dataView : {show: true, readOnly: false},
+                            magicType : {show: true, type: ['line', 'bar']},
+                            restore : {show: true},
+                            saveAsImage : {show: true}
+                        }
+                    },
+                    calculable : true,
+                    xAxis : [
+                        {
+                            type : 'value'
+                        }
+                    ],
+                    yAxis : [
+                        {
+                            type : 'category',
+                            axisTick : {show: false},
+                            data : {{date_list|safe}}
+                        }
+                    ],
+                    series : [
+
+                        {
+                            name:'买<50',
+                            type:'bar',
+                            stack: '总量',
+                            barWidth : 30,
+                            itemStyle: {normal: {
+                                color:'rgba(131,175,155,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_buy|safe}}
+                        },
+                        {
+                            name:'买50-100',
+                            type:'bar',
+                            stack: '总量',
+                            barWidth : 30,
+                            itemStyle: {normal: {
+                                color:'rgba(200,200,169,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_buy_50|safe}}
+                        },
+                        {
+                            name:'买100-200',
+                            type:'bar',
+                            stack: '总量',
+                            barWidth : 30,
+                            itemStyle: {normal: {
+                                color:'rgba(249,205,173,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_buy_100|safe}}
+                        },
+                        {
+                            name:'买200-400',
+                            type:'bar',
+                            stack: '总量',
+                            barWidth : 30,
+                            itemStyle: {normal: {
+                                color:'rgba(252,157,154,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_buy_200|safe}}
+                        },
+                        {
+                            name:'买>400',
+                            type:'bar',
+                            stack: '总量',
+                            barWidth : 30,
+                            itemStyle: {normal: {
+                                color:'rgba(254,67,101,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_buy_400|safe}}
+                        },
+                        {
+                            name:'卖<50',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle: {
+                              normal: {
+                                color:'rgba(222,156,83,3)',
+                                label : {show: true, position: 'inside'}
+                            }},
+                            data:{{amount_sell|safe}}
+                        }, {
+                            name:'卖50-100',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle: {
+                              normal: {
+                                color:'rgba(222,211,140,3)',
+                                label : {show: true, position: 'inside'}
+                            }},
+                            data:{{amount_sell_50|safe}}
+                        },{
+                            name:'卖<100-200',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle: {
+                              normal: {
+                                color:'rgba(201,186,131,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_sell_100|safe}}
+                        },{
+                            name:'卖<200-400',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle: {
+                              normal: {
+                                color:'rgba(137,190,178,3)',
+                                label : {show: true,position: 'inside'}
+                            }},
+                            data:{{amount_sell_200|safe}}
+                        },{
+                            name:'卖>400',
+                            type:'bar',
+                            stack: '总量',
+                            itemStyle: {
+                              normal: {
+                                color:'rgba(130,57,53,3)',
+                                label : {show: true, position: 'inside'}
+                            }},
+                            data:{{amount_sell_400|safe}}
+                        }
+                    ]
+                    };
+
+
+                myChart.setOption(option);
+            }
+        );
+
+    </script>
+{% endblock %}
